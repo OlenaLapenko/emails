@@ -3,7 +3,7 @@ import os
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'emails.settings')
 
-app = Celery('emails', brocker='localhost:6379/0', backend='localhost:6379/0')
+app = Celery('emails', )
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 

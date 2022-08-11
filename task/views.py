@@ -1,29 +1,32 @@
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
+import datetime
+from django.urls import reverse
+from django.http import HttpResponse, HttpResponseRedirect
+
+from django.views import generic
+
+from django.shortcuts import render, redirect
 
 from .forms import InputForm
 
-from .tasks import send_mail
+from .tasks import mails
 
 
-@csrf_exempt
 def sending_mail(request):
-    submit_button = request.POST.get("submit")
     if request.method == "POST":
         form = InputForm(request.POST)
-
         if form.is_valid():
             email = form.cleaned_data.get("email")
             text = form.cleaned_data.get("text")
             sending_time = form.cleaned_data.get("sending_time")
-            context = {'form': form, 'email': email,
-                       'text': text, 'submit_button': submit_button,
-                       'sending_time': sending_time}
-            send_mail.apply_async((text, email), eta=sending_time)
-            return render(request, 'form.html', context)
-
+            mails.apply_async((text, email), countdown=10)
+            return HttpResponseRedirect(reverse(thanks))
     else:
-        form = InputForm()
+        form = InputForm(initial={'sending_time': datetime.datetime.now()})
+        return render(request, template_name='form.html', context={"form": form})
 
-    return render(request, 'form.html', context={"form": form})
 
+def thanks(request):
+    return render(
+        request=request,
+        template_name='thanks.html',
+        )

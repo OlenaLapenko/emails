@@ -4,11 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
-celery = "==4.4.2"
 redis = "*"
 ipython = "*"
+django-extensions = "*"
+django = "==4.0.5"
 django-celery-results = "*"
+eventlet = "*"
 
 [dev-packages]
 
